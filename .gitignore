@@ -1,8 +1,16 @@
 .gradle
 /local.properties
 /.idea/workspace.xml
+*/build/*
 .DS_Store
 .idea
 
 *.iml
 jni/
+not-jni/
+
+*.o
+*.o.d
+*.so
+*.lo
+*.la
