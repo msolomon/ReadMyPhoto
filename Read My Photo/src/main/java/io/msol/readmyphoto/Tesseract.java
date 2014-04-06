@@ -19,18 +19,15 @@ import java.io.OutputStream;
  */
 public class Tesseract {
     private static final String trainedDataPath = "tesseract-ocr/en/tessdata/eng.traineddata";
-
-    private final TessBaseAPI tesseract = new TessBaseAPI();
+    private final File trainedData;
 
     public Tesseract(final AssetManager assetManager, File filesDir) {
 
-        File trainedData = new File(filesDir, trainedDataPath);
+        trainedData = new File(filesDir, trainedDataPath);
 
         if (!trainedData.exists()) {
             unzipTrainedData(assetManager, trainedData);
         }
-
-        tesseract.init(trainedData.getParentFile().getParent(), "eng");
     }
 
     private void unzipTrainedData(final AssetManager assetManager, final File trainedData) {
@@ -50,7 +47,7 @@ public class Tesseract {
     }
 
     public OCRTask readImage(final String path, final Callback tesseractCallback) {
-        OCRTask task = new OCRTask(tesseract, tesseractCallback);
+        OCRTask task = new OCRTask(trainedData, tesseractCallback);
         task.execute(new Options(path));
         return task;
     }
@@ -72,12 +69,12 @@ public class Tesseract {
     }
 
     public static class OCRTask extends AsyncTask<Options, Void, Void> {
-        private final TessBaseAPI tesseract;
+        private final File trainedData;
         private final Callback callback;
         private String result;
 
-        public OCRTask(final TessBaseAPI tesseract, final Callback callback) {
-            this.tesseract = tesseract;
+        public OCRTask(final File trainedData, final Callback callback) {
+            this.trainedData = trainedData;
             this.callback = callback;
         }
 
@@ -87,6 +84,9 @@ public class Tesseract {
             }
 
             Options options = params[0];
+
+            final TessBaseAPI tesseract = new TessBaseAPI();
+            tesseract.init(trainedData.getParentFile().getParent(), "eng");
 
             tesseract.setImage(new File(options.getImagePath()));
             result = tesseract.getUTF8Text();
