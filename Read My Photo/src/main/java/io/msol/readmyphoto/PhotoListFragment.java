@@ -55,16 +55,11 @@ public class PhotoListFragment extends ListFragment {
         }
     };
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public PhotoListFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
 
         new SimpleInjector(getActivity()).inject(this);
     }
@@ -80,15 +75,6 @@ public class PhotoListFragment extends ListFragment {
         }
 
         setListAdapter(gallery.getPhotoAdapter(getActivity(), photos));
-    }
-
-    @Override public void onStart() {
-        super.onStart();
-
-        final int selectedItemPosition = getSelectedItemPosition();
-        if (photos.size() > 0 && selectedItemPosition == ListView.INVALID_POSITION || selectedItemPosition == 0) {
-            itemSelected(0);
-        }
     }
 
     @Override
