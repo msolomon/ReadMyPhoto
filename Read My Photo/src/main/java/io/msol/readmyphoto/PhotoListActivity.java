@@ -2,7 +2,11 @@ package io.msol.readmyphoto;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -18,6 +22,10 @@ public class PhotoListActivity extends FragmentActivity implements PhotoListFrag
         setContentView(R.layout.activity_photo_twopane);
 
         ButterKnife.inject(this);
+
+        ImageView instructions = (ImageView)LayoutInflater.from(this).inflate(R.layout.instructions, photoDetailContainer, false);
+        photoDetailContainer.addView(instructions);
+        Picasso.with(this).load(R.drawable.instructions).into(instructions);
 
         ((PhotoListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.photo_list))
