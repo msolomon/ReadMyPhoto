@@ -17,7 +17,6 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         Timber.plant(new Timber.DebugTree());
-        Timber.tag("Application");
 
         createObjectGraph();
 
