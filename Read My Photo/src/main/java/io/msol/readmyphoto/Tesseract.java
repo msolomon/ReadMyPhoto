@@ -1,6 +1,7 @@
 package io.msol.readmyphoto;
 
 import android.content.res.AssetManager;
+import android.os.AsyncTask;
 
 import com.google.common.io.ByteStreams;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -17,18 +18,19 @@ import java.io.OutputStream;
  * Created by mike on 4/5/14.
  */
 public class Tesseract {
-    private static final String traineddataFilename = "eng.traineddata";
-    private static final String trainingPath = "tesseract-ocr/en/tessdata/" + traineddataFilename;
-    private static final String tessdataPath = "tessdata";
+    private static final String trainedDataPath = "tesseract-ocr/en/tessdata/eng.traineddata";
 
     private final TessBaseAPI tesseract = new TessBaseAPI();
 
     public Tesseract(final AssetManager assetManager, File filesDir) {
-        File trainedData = new File(filesDir, tessdataPath + "/" + traineddataFilename);
+
+        File trainedData = new File(filesDir, trainedDataPath);
 
         if (!trainedData.exists()) {
             unzipTrainedData(assetManager, trainedData);
         }
+
+        tesseract.init(trainedData.getParentFile().getParent(), "eng");
     }
 
     private void unzipTrainedData(final AssetManager assetManager, final File trainedData) {
@@ -36,7 +38,7 @@ public class Tesseract {
             trainedData.getParentFile().mkdirs();
             trainedData.createNewFile();
 
-            InputStream inputStream = new BufferedInputStream(assetManager.open(trainingPath));
+            InputStream inputStream = new BufferedInputStream(assetManager.open(trainedDataPath));
             OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(trainedData));
             ByteStreams.copy(inputStream, outputStream);
 
@@ -44,6 +46,54 @@ public class Tesseract {
             outputStream.close();
         } catch (IOException e) {
             throw new RuntimeException("Error copying out from assets", e);
+        }
+    }
+
+    public void readImage(final String path, final Callback tesseractCallback) {
+        new TesseractOCRTask(tesseract, tesseractCallback).execute(new Options(path));
+    }
+
+    public static interface Callback {
+        void onOCRComplete(String readText);
+    }
+
+    public static class Options {
+        private final String imagePath;
+
+        public Options(final String imagePath) {
+            this.imagePath = imagePath;
+        }
+
+        public String getImagePath() {
+            return imagePath;
+        }
+    }
+
+    private static class TesseractOCRTask extends AsyncTask<Options, Void, Void> {
+        private final TessBaseAPI tesseract;
+        private final Callback callback;
+        private String result;
+
+        public TesseractOCRTask(final TessBaseAPI tesseract, final Callback callback) {
+            this.tesseract = tesseract;
+            this.callback = callback;
+        }
+
+        @Override protected Void doInBackground(final Options... params) {
+            if (params.length != 1) {
+                throw new RuntimeException("Expected one Options object");
+            }
+
+            Options options = params[0];
+
+            tesseract.setImage(new File(options.getImagePath()));
+            result = tesseract.getUTF8Text();
+
+            return null;
+        }
+
+        @Override protected void onPostExecute(final Void aVoid) {
+            callback.onOCRComplete(result);
         }
     }
 }

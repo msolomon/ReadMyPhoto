@@ -9,8 +9,6 @@ import android.content.Context;
 import com.google.common.collect.ImmutableList;
 
 import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -38,10 +36,6 @@ public class DaggerModule {
 
     @Provides ImmutableList<File> providePhotos(final Gallery gallery) {
         return gallery.getPhotos();
-    }
-
-    @Provides @Singleton ExecutorService provideExecutorService() {
-        return Executors.newCachedThreadPool();
     }
 
     @Provides @Singleton Tesseract provideTesseract(final Context context) {
