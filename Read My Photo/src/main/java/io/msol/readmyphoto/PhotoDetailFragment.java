@@ -15,6 +15,7 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class PhotoDetailFragment extends Fragment {
     @Inject ClipboardManager clipboardManager;
     @Inject Context context;
 
+    @InjectView(R.id.detail_scroll_view) ScrollView scrollView;
     @InjectView(R.id.text) TextView text;
     @InjectView(R.id.progress) ProgressBar progress;
 
@@ -49,6 +51,8 @@ public class PhotoDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
 
         new SimpleInjector(getActivity()).inject(this);
 
@@ -74,6 +78,7 @@ public class PhotoDetailFragment extends Fragment {
                     progress.setVisibility(View.INVISIBLE);
                     text.setVisibility(View.VISIBLE);
                     text.setText(readText);
+                    scrollView.smoothScrollTo(0, text.getBottom());
                 }
             }
 
@@ -157,7 +162,7 @@ public class PhotoDetailFragment extends Fragment {
     };
 
     private class KeyboardHidingFocusChangeListener implements View.OnFocusChangeListener {
-        @Override public void onFocusChange(View v, boolean hasFocus){
+        @Override public void onFocusChange(View v, boolean hasFocus) {
             if (v.getId() == R.id.text && !hasFocus) {
                 inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
