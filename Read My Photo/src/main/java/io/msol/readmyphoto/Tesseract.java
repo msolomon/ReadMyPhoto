@@ -49,8 +49,10 @@ public class Tesseract {
         }
     }
 
-    public void readImage(final String path, final Callback tesseractCallback) {
-        new TesseractOCRTask(tesseract, tesseractCallback).execute(new Options(path));
+    public OCRTask readImage(final String path, final Callback tesseractCallback) {
+        OCRTask task = new OCRTask(tesseract, tesseractCallback);
+        task.execute(new Options(path));
+        return task;
     }
 
     public static interface Callback {
@@ -69,12 +71,12 @@ public class Tesseract {
         }
     }
 
-    private static class TesseractOCRTask extends AsyncTask<Options, Void, Void> {
+    public static class OCRTask extends AsyncTask<Options, Void, Void> {
         private final TessBaseAPI tesseract;
         private final Callback callback;
         private String result;
 
-        public TesseractOCRTask(final TessBaseAPI tesseract, final Callback callback) {
+        public OCRTask(final TessBaseAPI tesseract, final Callback callback) {
             this.tesseract = tesseract;
             this.callback = callback;
         }

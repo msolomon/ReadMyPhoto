@@ -4,7 +4,9 @@ package io.msol.readmyphoto;
  * Created by mike on 4/3/14.
  */
 
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.view.inputmethod.InputMethodManager;
 
 import com.google.common.collect.ImmutableList;
 
@@ -41,4 +43,13 @@ public class DaggerModule {
     @Provides @Singleton Tesseract provideTesseract(final Context context) {
         return new Tesseract(context.getAssets(), context.getFilesDir());
     }
+
+    @Provides @Singleton InputMethodManager provideInputMethodManager(final Context context) {
+        return (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+    }
+
+    @Provides @Singleton ClipboardManager provideClipboardManager(final Context context) {
+        return (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
+    }
+
 }
