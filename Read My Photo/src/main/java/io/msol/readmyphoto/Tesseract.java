@@ -112,6 +112,8 @@ public class Tesseract {
                 if (isCancelled()) { return null; };
             }
 
+            tesseract.end();
+
             return null;
         }
 
