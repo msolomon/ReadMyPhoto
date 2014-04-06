@@ -85,9 +85,10 @@ public class PhotoListFragment extends ListFragment {
     @Override public void onStart() {
         super.onStart();
 
-//        if (photos.size() > 0 && getSelectedItemPosition() == ListView.INVALID_POSITION) {
-//            itemSelected(0);
-//        }
+        final int selectedItemPosition = getSelectedItemPosition();
+        if (photos.size() > 0 && selectedItemPosition == ListView.INVALID_POSITION || selectedItemPosition == 0) {
+            itemSelected(0);
+        }
     }
 
     @Override
