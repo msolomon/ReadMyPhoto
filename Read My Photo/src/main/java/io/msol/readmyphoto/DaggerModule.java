@@ -4,9 +4,9 @@ package io.msol.readmyphoto;
  * Created by mike on 4/3/14.
  */
 
-import android.content.Context;
+import com.google.common.collect.ImmutableList;
 
-import javax.inject.Singleton;
+import java.io.File;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,7 +14,8 @@ import dagger.Provides;
 @Module(
         injects = {
                 Application.class,
-                PhotoDetailActivity.class
+                Gallery.class,
+                PhotoListFragment.class
         }
 )
 public class DaggerModule {
@@ -24,11 +25,11 @@ public class DaggerModule {
         this.application = application;
     }
 
-    @Singleton @Provides Application provideApplication() {
-        return application;
-    }
+//    @Singleton @Provides Context provideContext() {
+//        return application;
+//    }
 
-    @Singleton @Provides Context provideContext() {
-        return application;
+    @Provides ImmutableList<File> providePhotos(final Gallery gallery) {
+        return gallery.getPhotos();
     }
 }

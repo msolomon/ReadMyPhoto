@@ -1,5 +1,7 @@
 package io.msol.readmyphoto;
 
+import javax.inject.Inject;
+
 import dagger.ObjectGraph;
 import timber.log.Timber;
 
@@ -9,17 +11,24 @@ import timber.log.Timber;
 public class Application extends android.app.Application {
     private ObjectGraph objectGraph;
 
+    @Inject Gallery gallery;
+
     @Override public void onCreate() {
         super.onCreate();
 
         Timber.plant(new Timber.DebugTree());
         Timber.tag("Application");
 
-        createObjectAndInject();
+        createObjectGraph();
+
+        inject(this);
     }
 
-    private void createObjectAndInject() {
+    private void createObjectGraph() {
         objectGraph = ObjectGraph.create(new DaggerModule(this));
-        objectGraph.inject(this);
+    }
+
+    public void inject(Object injectionTarget) {
+        objectGraph.inject(injectionTarget);
     }
 }
