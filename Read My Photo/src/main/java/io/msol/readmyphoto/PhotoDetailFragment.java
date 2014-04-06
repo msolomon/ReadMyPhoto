@@ -76,6 +76,9 @@ public class PhotoDetailFragment extends Fragment {
                     text.setText(readText);
                 }
             }
+
+            @Override public void onFailure() {
+            }
         });
     }
 
@@ -137,6 +140,10 @@ public class PhotoDetailFragment extends Fragment {
     }
 
     private void clipAndNotifyWithDelay(final CharSequence text) {
+        if (text.length() == 0) {
+            return;
+        }
+
         clipboardManager.setPrimaryClip(ClipData.newPlainText("Text read from a photo", text));
 
         final Date now = new Date();

@@ -4,6 +4,8 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 
 import com.google.common.io.ByteStreams;
+import com.googlecode.leptonica.android.Pix;
+import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.BufferedInputStream;
@@ -54,6 +56,7 @@ public class Tesseract {
 
     public static interface Callback {
         void onOCRComplete(String readText);
+        void onFailure();
     }
 
     public static class Options {
@@ -71,7 +74,8 @@ public class Tesseract {
     public static class OCRTask extends AsyncTask<Options, Void, Void> {
         private final File trainedData;
         private final Callback callback;
-        private String result;
+        private String result = "";
+        private TessBaseAPI tesseract;
 
         public OCRTask(final File trainedData, final Callback callback) {
             this.trainedData = trainedData;
@@ -85,17 +89,38 @@ public class Tesseract {
 
             Options options = params[0];
 
-            final TessBaseAPI tesseract = new TessBaseAPI();
+            tesseract = new TessBaseAPI();
             tesseract.init(trainedData.getParentFile().getParent(), "eng");
+            if (isCancelled()) { return null; };
 
             tesseract.setImage(new File(options.getImagePath()));
-            result = tesseract.getUTF8Text();
+            if (isCancelled()) { return null; };
+
+            tesseract.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
+            Pixa regions = tesseract.getRegions();
+            tesseract.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
+            if (isCancelled()) { return null; };
+
+            for (final Pix pix : regions) {
+                tesseract.clear();
+                if (isCancelled()) { return null; };
+
+                tesseract.setImage(pix);
+                if (isCancelled()) { return null; };
+
+                result += tesseract.getUTF8Text() + " ";
+                if (isCancelled()) { return null; };
+            }
 
             return null;
         }
 
         @Override protected void onPostExecute(final Void aVoid) {
-            callback.onOCRComplete(result);
+            callback.onOCRComplete(result.trim());
+        }
+
+        @Override protected void onCancelled(final Void aVoid) {
+            callback.onFailure();
         }
     }
 }
