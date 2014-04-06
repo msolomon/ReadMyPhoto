@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -92,16 +93,30 @@ public class PhotoDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_photo_detail, container, false);
-        ImageView imageView = ButterKnife.findById(rootView, R.id.image);
+        final ImageView imageView = ButterKnife.findById(rootView, R.id.image);
 
-        Picasso.with(getActivity()).load(new File(filePath)).centerInside().resize(container.getMeasuredWidth(), container.getMeasuredHeight()).into(imageView);
+        if (container.getMeasuredWidth() == 0) {
+            ViewTreeObserver viewTreeObserver = container.getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override public void onGlobalLayout() {
+                    loadImageIntoContainer(container, imageView);
+                }
+            });
+        } else {
+            loadImageIntoContainer(container, imageView);
+        }
 
         showSpinner();
 
         return rootView;
     }
+
+    private void loadImageIntoContainer(final ViewGroup container, final ImageView imageView) {
+        Picasso.with(getActivity()).load(new File(filePath)).centerInside().resize(container.getMeasuredWidth(), container.getMeasuredHeight()).into(imageView);
+    }
+
 
     @Override public void onStart() {
         super.onStart();
