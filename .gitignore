@@ -9,6 +9,9 @@
 jni/
 not-jni/
 
+private.gradle
+/screen.png
+
 *.o
 *.o.d
 *.so

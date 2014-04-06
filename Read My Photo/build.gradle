@@ -13,12 +13,23 @@ android {
     versionName "1.0"
   }
 
+  signingConfigs {
+    release
+  }
+
   buildTypes {
     release {
+      debuggable false
+      jniDebugBuild false
+      signingConfig signingConfigs.release
       runProguard false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
     }
   }
+
+  signingFile = file("private.gradle")
+  if(signingFile.exists())
+    apply from: signingFile
 
   packagingOptions {
     exclude 'META-INF/services/javax.annotation.processing.Processor'
