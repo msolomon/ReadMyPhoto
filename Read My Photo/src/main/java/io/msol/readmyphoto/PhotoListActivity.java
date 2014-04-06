@@ -16,6 +16,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class PhotoListActivity extends FragmentActivity implements PhotoListFragment.Callbacks {
+    private static final String DETAIL_FRAGMENT = "DETAIL_FRAGMENT";
     @InjectView(R.id.photo_detail_container) ViewGroup photoDetailContainer;
 
     private PhotoRequestor photoRequestor;
@@ -29,15 +30,19 @@ public class PhotoListActivity extends FragmentActivity implements PhotoListFrag
 
         ButterKnife.inject(this);
 
-        if (photoDetailContainer.getChildCount() == 0) {
-            ImageView instructions = (ImageView)LayoutInflater.from(this).inflate(R.layout.instructions, photoDetailContainer, false);
-            photoDetailContainer.addView(instructions);
-            Picasso.with(this).load(R.drawable.instructions).into(instructions);
-        }
+        showInstructions();
 
         ((PhotoListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.photo_list))
                 .setActivateOnItemClick(true);
+    }
+
+    private void showInstructions() {
+        if (getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT) == null) {
+            ImageView instructions = (ImageView) LayoutInflater.from(this).inflate(R.layout.instructions, photoDetailContainer, false);
+            photoDetailContainer.addView(instructions);
+            Picasso.with(this).load(R.drawable.instructions).into(instructions);
+        }
     }
 
     @Override
@@ -49,7 +54,7 @@ public class PhotoListActivity extends FragmentActivity implements PhotoListFrag
         fragment.setArguments(arguments);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.photo_detail_container, fragment)
+                .replace(R.id.photo_detail_container, fragment, DETAIL_FRAGMENT)
                 .commit();
 
         photoDetailContainer.removeAllViews();
