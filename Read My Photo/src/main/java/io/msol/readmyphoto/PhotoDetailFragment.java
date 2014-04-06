@@ -5,57 +5,36 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
 
-import io.msol.readmyphoto.dummy.DummyContent;
+import java.io.File;
 
-/**
- * A fragment representing a single Photo detail screen.
- * This fragment is either contained in a {@link PhotoListActivity}
- * in two-pane mode (on tablets) or a {@link PhotoDetailActivity}
- * on handsets.
- */
+import butterknife.ButterKnife;
+
 public class PhotoDetailFragment extends Fragment {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String FILE_PATH = "FILE_PATH";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public PhotoDetailFragment() {
-    }
+    private String filePath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (!getArguments().containsKey(FILE_PATH)) {
+            throw new RuntimeException("Tried to get detail view without attaching filePath");
         }
+
+        filePath = getArguments().getString(FILE_PATH);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_photo_detail, container, false);
+        ImageView imageView = ButterKnife.findById(rootView, R.id.image);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.photo_detail)).setText(mItem.content);
-        }
+        Picasso.with(getActivity()).load(new File(filePath)).centerInside().resize(container.getMeasuredWidth(), container.getMeasuredHeight()).into(imageView);
 
         return rootView;
     }
