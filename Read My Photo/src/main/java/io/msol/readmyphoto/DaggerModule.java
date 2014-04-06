@@ -8,10 +8,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.inputmethod.InputMethodManager;
 
-import com.google.common.collect.ImmutableList;
-
-import java.io.File;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -34,10 +30,6 @@ public class DaggerModule {
 
     @Provides @Singleton Context provideContext() {
         return application;
-    }
-
-    @Provides ImmutableList<File> providePhotos(final Gallery gallery) {
-        return gallery.getPhotos();
     }
 
     @Provides @Singleton Tesseract provideTesseract(final Context context) {

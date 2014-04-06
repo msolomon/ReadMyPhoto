@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 public class PhotoListFragment extends ListFragment {
     @Inject Gallery gallery;
-    @Inject ImmutableList<File> photos;
+    ImmutableList<File> photos;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -74,6 +74,11 @@ public class PhotoListFragment extends ListFragment {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
 
+        fetchPhotos();
+    }
+
+    public void fetchPhotos() {
+        photos = gallery.getPhotos();
         setListAdapter(gallery.getPhotoAdapter(getActivity(), photos));
     }
 

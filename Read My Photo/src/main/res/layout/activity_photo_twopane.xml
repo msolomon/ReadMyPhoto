@@ -16,7 +16,7 @@
             >
 
         <ImageButton
-                android:id="@+id/take_photo"
+                android:id="@+id/camera_button"
                 android:layout_width="match_parent"
                 android:src="@drawable/camera"
                 android:layout_height="64dp"/>

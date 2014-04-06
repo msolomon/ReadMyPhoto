@@ -1,5 +1,6 @@
 package io.msol.readmyphoto;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -12,20 +13,27 @@ import java.io.File;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class PhotoListActivity extends FragmentActivity implements PhotoListFragment.Callbacks {
     @InjectView(R.id.photo_detail_container) ViewGroup photoDetailContainer;
+
+    private PhotoRequestor photoRequestor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_twopane);
 
+        photoRequestor = new PhotoRequestor(this);
+
         ButterKnife.inject(this);
 
-        ImageView instructions = (ImageView)LayoutInflater.from(this).inflate(R.layout.instructions, photoDetailContainer, false);
-        photoDetailContainer.addView(instructions);
-        Picasso.with(this).load(R.drawable.instructions).into(instructions);
+        if (photoDetailContainer.getChildCount() == 0) {
+            ImageView instructions = (ImageView)LayoutInflater.from(this).inflate(R.layout.instructions, photoDetailContainer, false);
+            photoDetailContainer.addView(instructions);
+            Picasso.with(this).load(R.drawable.instructions).into(instructions);
+        }
 
         ((PhotoListFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.photo_list))
@@ -45,5 +53,21 @@ public class PhotoListActivity extends FragmentActivity implements PhotoListFrag
                 .commit();
 
         photoDetailContainer.removeAllViews();
+    }
+
+    @Override protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PhotoRequestor.REQUEST_TAKE_PHOTO) {
+            photoRequestor.galleryAddPic();
+
+            ((PhotoListFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.photo_list)).fetchPhotos();
+        }
+    }
+
+    @OnClick(R.id.camera_button)
+    public void buttonCameraPressed() {
+        photoRequestor.dispatchTakePictureIntent();
     }
 }
